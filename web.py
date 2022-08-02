@@ -1,12 +1,14 @@
-from flask import Flask, render_template
-# sql alchemy 
+# Importing the Flask class from the flask module.
+from flask import Flask, render_template,request,redirect,url_for
+
+# Importing the SQLAlchemy class from the flask_sqlalchemy module.
 from flask_sqlalchemy import SQLAlchemy;
+
+# Creating a new instance of the Flask class for our web app.
 app = Flask(__name__)
 
-# 
 
 # config file for db 
-# 
 uri = 'postgresql://postgres:7y8a1h64@localhost:5432/todoapp'
 app.config['SQLALCHEMY_DATABASE_URI'] =  uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -24,13 +26,20 @@ class Todo(db.Model):
 
 db.create_all()
 
-  """
-  It returns the index.html file and passes the data from the database to the index.html file.
-  :return: The index.html template is being returned.
-  """
+
+@app.route('/todos/create', methods=['POST'])
+def create_todo():
+    description = request.form.get('description')
+    todo = Todo(description=description)
+    db.session.add(todo)
+    db.session.commit()
+    return redirect(url_for('index'))
+
+
 @app.route('/')
 def index():
-    return render_template('index.html',data=Todo.query.all())
+  return render_template('index.html',data=Todo.query.all())
+   
 
 
 
@@ -43,7 +52,6 @@ def index():
 
 
 
-#always include this at the bottom of your code (port 3000 is only necessary in workspaces)
-
+# A way to run the app on a local server.
 if __name__ == '__main__':
    app.run(host="0.0.0.0", port=3000)
