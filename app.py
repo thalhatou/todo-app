@@ -4,8 +4,14 @@ from flask import Flask, render_template,request,redirect,url_for,jsonify
 # Importing the SQLAlchemy class from the flask_sqlalchemy module.
 from flask_sqlalchemy import SQLAlchemy;
 
+
 # Creating a new instance of the Flask class for our web app.
 app = Flask(__name__)
+
+app.config['ENV'] = 'development'
+app.config['DEBUG'] = True
+app.config['TESTING'] = True
+# import pdb; pdb.set_trace()
 
 
 # config file for db 
@@ -29,17 +35,14 @@ db.create_all()
 
 @app.route('/todos/create', methods=['POST'])
 def create_todo():
-    error = False
-    body = {}
-    description = request.form.get('description')
-    description = request.get_json()['description']
-    todo = Todo(description=description)
-    db.session.add(todo)
-    db.session.commit()
-    return jsonify({
-      'description' : todo.description
-    })
-
+   description = request.get_json()['description']
+   todo = Todo(description=description)
+   print(todo.description)
+   db.session.add(todo)
+   db.session.commit();
+   return jsonify({
+        'description': todo.description
+     })
 
 
 @app.route('/')
@@ -58,6 +61,6 @@ def index():
 
 
 
-# A way to run the app on a local server.
-if __name__ == '__main__':
-   app.run(host="0.0.0.0", port=3000)
+# # A way to run the app on a local server.
+# if __name__ == '__main__':
+#    app.run(host="0.0.0.0", port=3000)
